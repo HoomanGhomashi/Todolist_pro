@@ -3,7 +3,7 @@ import './App.css'
 import TodoPage from './pages/TodoPage';
 import WeatherPage from './pages/WeatherPage';
 import Home from './pages/Home';
-import Headers from './Headers';
+import Headers from './pages/Headers';
 import LoginPage from './pages/LoginPage';
 
 function App() {
