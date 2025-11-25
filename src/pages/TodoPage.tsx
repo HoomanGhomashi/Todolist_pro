@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/TodoPageStyle.css';
 
 interface Task {
@@ -9,12 +9,33 @@ interface Task {
 }
 
 const TodoPage: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [explanation, setExplanation] = useState('');
+  // --- Initialisation des états à partir du localStorage ---
+
+  // Charge les tâches sauvegardées ou un tableau vide
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = localStorage.getItem('todoPageTasks');
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+
+  // Charge le contenu du formulaire sauvegardé pour chaque champ
+  const [title, setTitle] = useState(() => localStorage.getItem('todoFormTitle') || '');
+  const [date, setDate] = useState(() => localStorage.getItem('todoFormDate') || '');
+  const [explanation, setExplanation] = useState(() => localStorage.getItem('todoFormExplanation') || '');
+
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
+
+  // --- Sauvegarde des états dans le localStorage à chaque modification ---
+
+  // Sauvegarde la liste des tâches
+  useEffect(() => {
+    localStorage.setItem('todoPageTasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  // Sauvegarde chaque champ du formulaire individuellement
+  useEffect(() => { localStorage.setItem('todoFormTitle', title); }, [title]);
+  useEffect(() => { localStorage.setItem('todoFormDate', date); }, [date]);
+  useEffect(() => { localStorage.setItem('todoFormExplanation', explanation); }, [explanation]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -38,10 +59,13 @@ const TodoPage: React.FC = () => {
       alert('Tâche enregistrée !');
     }
 
-    // On vide le formulaire après ajout ou modification
+    // On vide le formulaire et le localStorage associé après ajout ou modification
     setTitle('');
     setDate('');
     setExplanation('');
+    localStorage.removeItem('todoFormTitle');
+    localStorage.removeItem('todoFormDate');
+    localStorage.removeItem('todoFormExplanation');
   };
 
   const handleEdit = (task: Task) => {
@@ -57,6 +81,9 @@ const TodoPage: React.FC = () => {
     setTitle('');
     setDate('');
     setExplanation('');
+    localStorage.removeItem('todoFormTitle');
+    localStorage.removeItem('todoFormDate');
+    localStorage.removeItem('todoFormExplanation');
   };
 
   const handleDelete = (taskId: number) => {

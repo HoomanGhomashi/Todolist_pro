@@ -1,0 +1,42 @@
+.weather-widget, .weather-widget-placeholder {
+  background: linear-gradient(135deg, #66a6ff, #89f7fe);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-widget:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.weather-widget-placeholder {
+  justify-content: center;
+  font-style: italic;
+}
+
+.weather-widget-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 1rem;
+}
+
+.weather-widget-info {
+  text-align: right;
+}
+
+.weather-widget-city {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.weather-widget-temp {
+  font-size: 2rem;
+  font-weight: 700;
+}
