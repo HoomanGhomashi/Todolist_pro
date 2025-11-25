@@ -81,7 +81,13 @@
 }
 
 .login-logout-section {
-  /* Section pour le bouton login/logout */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-greeting {
+  font-weight: 500;
 }
 
 .login-logout-button {
