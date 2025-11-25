@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/WeatherPageStyles.css';
+import { useAuth } from '../context/AuthContext';
 
 interface WeatherData {
   name: string;
@@ -17,9 +18,12 @@ interface WeatherData {
 }
 
 const WeatherPage = () => {
+  const { user } = useAuth();
+  const CITIES_KEY = user ? `weatherPageCities_${user.email}` : '';
+
   const [cityInput, setCityInput] = useState('');
   const [cities, setCities] = useState<string[]>(() => {
-    const savedCities = localStorage.getItem('weatherPageCities');
+    const savedCities = localStorage.getItem(CITIES_KEY);
     return savedCities ? JSON.parse(savedCities) : [];
   });
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData | { error: string } | 'loading'>>({});
@@ -44,8 +48,10 @@ const WeatherPage = () => {
 
   // Sauvegarde les villes dans le localStorage à chaque modification
   useEffect(() => {
-    localStorage.setItem('weatherPageCities', JSON.stringify(cities));
-  }, [cities]);
+    if (user && CITIES_KEY) {
+      localStorage.setItem(CITIES_KEY, JSON.stringify(cities));
+    }
+  }, [cities, user, CITIES_KEY]);
 
   // Charge la météo pour les villes sauvegardées au premier chargement
   useEffect(() => {

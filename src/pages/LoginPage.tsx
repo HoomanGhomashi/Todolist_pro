@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/LoginPage.css';
 
 const LoginPage: React.FC = () => {
@@ -8,7 +9,9 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const toggleMode = () => {
     setIsLoginMode(!isLoginMode);
@@ -16,16 +19,17 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setError(''); // Réinitialise l'erreur à chaque soumission
+
     if (isLoginMode) {
       // Logique de connexion (Sign In)
       const users = JSON.parse(localStorage.getItem('app_users') || '[]');
       const user = users.find((u: any) => u.email === email && u.password === password);
       if (user) {
-        localStorage.setItem('loggedInUser', JSON.stringify(user));
-        alert('Connexion réussie !');
+        login(user);
         navigate('/'); // Redirige vers le Dashboard
       } else {
-        alert('Email ou mot de passe incorrect.');
+        setError('Email ou mot de passe incorrect.');
       }
     } else {
       // Logique d'inscription (Sign Up)
@@ -33,8 +37,7 @@ const LoginPage: React.FC = () => {
       const users = JSON.parse(localStorage.getItem('app_users') || '[]');
       users.push(newUser);
       localStorage.setItem('app_users', JSON.stringify(users));
-      localStorage.setItem('loggedInUser', JSON.stringify(newUser));
-      alert('Inscription réussie !');
+      login(newUser);
       navigate('/'); // Redirige vers le Dashboard
     }
   };
@@ -64,6 +67,7 @@ const LoginPage: React.FC = () => {
             <label htmlFor="password">Mot de passe</label>
             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
+          {error && <p className="error-message">{error}</p>}
           <button type="submit" className="submit-btn">{isLoginMode ? 'Se connecter' : 'S\'inscrire'}</button>
         </form>
         <p className="toggle-mode">

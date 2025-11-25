@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import WeatherWidget from '../components/WeatherWidget';
+import { useAuth } from '../context/AuthContext';
 
 interface Task {
   id: number;
@@ -12,18 +13,23 @@ interface Task {
 const Dashboard: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Charger les villes depuis le localStorage
-    const savedCitiesRaw = localStorage.getItem('weatherPageCities');
-    const savedCities = savedCitiesRaw ? JSON.parse(savedCitiesRaw) : [];
-    setCities(savedCities);
+    if (user) {
+      // Charger les villes depuis le localStorage de l'utilisateur
+      const citiesKey = `weatherPageCities_${user.email}`;
+      const savedCitiesRaw = localStorage.getItem(citiesKey);
+      const savedCities = savedCitiesRaw ? JSON.parse(savedCitiesRaw) : [];
+      setCities(savedCities);
 
-    // Charger les tâches depuis le localStorage
-    const savedTasksRaw = localStorage.getItem('todoPageTasks');
-    const savedTasks = savedTasksRaw ? JSON.parse(savedTasksRaw) : [];
-    setTasks(savedTasks);
-  }, []);
+      // Charger les tâches depuis le localStorage de l'utilisateur
+      const tasksKey = `todoPageTasks_${user.email}`;
+      const savedTasksRaw = localStorage.getItem(tasksKey);
+      const savedTasks = savedTasksRaw ? JSON.parse(savedTasksRaw) : [];
+      setTasks(savedTasks);
+    }
+  }, [user]);
 
   return (
     <div className="dashboard-page">

@@ -1,16 +1,15 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Headers.css';
 
 const Headers: React.FC = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('loggedInUser');
-    alert('Vous avez été déconnecté.');
+    logout();
     navigate('/login');
-    window.location.reload(); // Pour forcer la mise à jour de l'état
   };
 
   return (

@@ -91,3 +91,11 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.error-message {
+  color: #f56c6c;
+  background-color: #fef0f0;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

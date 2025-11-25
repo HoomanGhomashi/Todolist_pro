@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TodoPageStyle.css';
+import { useAuth } from '../context/AuthContext';
 
 interface Task {
   id: number;
@@ -9,18 +10,24 @@ interface Task {
 }
 
 const TodoPage: React.FC = () => {
+  const { user } = useAuth();
+  const TASKS_KEY = user ? `todoPageTasks_${user.email}` : '';
+  const FORM_TITLE_KEY = user ? `todoFormTitle_${user.email}` : '';
+  const FORM_DATE_KEY = user ? `todoFormDate_${user.email}` : '';
+  const FORM_EXPLANATION_KEY = user ? `todoFormExplanation_${user.email}` : '';
+
   // --- Initialisation des états à partir du localStorage ---
 
   // Charge les tâches sauvegardées ou un tableau vide
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = localStorage.getItem('todoPageTasks');
+    const savedTasks = localStorage.getItem(TASKS_KEY);
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
 
   // Charge le contenu du formulaire sauvegardé pour chaque champ
-  const [title, setTitle] = useState(() => localStorage.getItem('todoFormTitle') || '');
-  const [date, setDate] = useState(() => localStorage.getItem('todoFormDate') || '');
-  const [explanation, setExplanation] = useState(() => localStorage.getItem('todoFormExplanation') || '');
+  const [title, setTitle] = useState(() => localStorage.getItem(FORM_TITLE_KEY) || '');
+  const [date, setDate] = useState(() => localStorage.getItem(FORM_DATE_KEY) || '');
+  const [explanation, setExplanation] = useState(() => localStorage.getItem(FORM_EXPLANATION_KEY) || '');
 
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
@@ -28,14 +35,16 @@ const TodoPage: React.FC = () => {
   // --- Sauvegarde des états dans le localStorage à chaque modification ---
 
   // Sauvegarde la liste des tâches
-  useEffect(() => {
-    localStorage.setItem('todoPageTasks', JSON.stringify(tasks));
-  }, [tasks]);
+  useEffect(() => { 
+    if (user && TASKS_KEY) {
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    }
+  }, [tasks, user, TASKS_KEY]);
 
   // Sauvegarde chaque champ du formulaire individuellement
-  useEffect(() => { localStorage.setItem('todoFormTitle', title); }, [title]);
-  useEffect(() => { localStorage.setItem('todoFormDate', date); }, [date]);
-  useEffect(() => { localStorage.setItem('todoFormExplanation', explanation); }, [explanation]);
+  useEffect(() => { if (user && FORM_TITLE_KEY) localStorage.setItem(FORM_TITLE_KEY, title); }, [title, user, FORM_TITLE_KEY]);
+  useEffect(() => { if (user && FORM_DATE_KEY) localStorage.setItem(FORM_DATE_KEY, date); }, [date, user, FORM_DATE_KEY]);
+  useEffect(() => { if (user && FORM_EXPLANATION_KEY) localStorage.setItem(FORM_EXPLANATION_KEY, explanation); }, [explanation, user, FORM_EXPLANATION_KEY]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -63,9 +72,9 @@ const TodoPage: React.FC = () => {
     setTitle('');
     setDate('');
     setExplanation('');
-    localStorage.removeItem('todoFormTitle');
-    localStorage.removeItem('todoFormDate');
-    localStorage.removeItem('todoFormExplanation');
+    localStorage.removeItem(FORM_TITLE_KEY);
+    localStorage.removeItem(FORM_DATE_KEY);
+    localStorage.removeItem(FORM_EXPLANATION_KEY);
   };
 
   const handleEdit = (task: Task) => {
@@ -81,9 +90,9 @@ const TodoPage: React.FC = () => {
     setTitle('');
     setDate('');
     setExplanation('');
-    localStorage.removeItem('todoFormTitle');
-    localStorage.removeItem('todoFormDate');
-    localStorage.removeItem('todoFormExplanation');
+    localStorage.removeItem(FORM_TITLE_KEY);
+    localStorage.removeItem(FORM_DATE_KEY);
+    localStorage.removeItem(FORM_EXPLANATION_KEY);
   };
 
   const handleDelete = (taskId: number) => {
